@@ -1,9 +1,8 @@
 import 'package:lcov_report_gen/html/html_table.dart';
+import 'package:lcov_report_gen/html/html_text.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 import 'package:lcov_report_gen/extensions/string_extensions.dart';
-
-import 'test_html_element.dart';
 
 void main() {
   test('Generates empty table when given empty inputs', () {
@@ -22,11 +21,11 @@ void main() {
 
   test('Generates full table when given non-empty inputs', () {
     var table = HtmlTable([
-      TestHtmlElement(),
-      TestHtmlElement()
+      HtmlText('test'),
+      HtmlText('test')
     ], [
-      [TestHtmlElement(), TestHtmlElement()],
-      [TestHtmlElement(), TestHtmlElement()]
+      [HtmlText('test'), HtmlText('test')],
+      [HtmlText('test'), HtmlText('test')]
     ]);
     var result = table.toString();
     var expectedResult = '''

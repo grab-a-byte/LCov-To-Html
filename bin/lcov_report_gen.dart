@@ -1,26 +1,14 @@
 import 'dart:io';
 
+import 'package:lcov_report_gen/infrastructure/file_loader.dart';
+import 'package:lcov_report_gen/infrastructure/path_manager.dart';
 import 'package:path/path.dart' as path;
 import 'package:lcov_report_gen/lcov_parser.dart';
 import 'package:lcov_report_gen/lcov_to_html.dart';
 
-String getHomePath() {
-  var envVars = Platform.environment;
-  if (Platform.isMacOS) {
-    return envVars['HOME'];
-  } else if (Platform.isLinux) {
-    return envVars['HOME'];
-  } else if (Platform.isWindows) {
-    return envVars['UserProfile'];
-  }
-}
-
-String getDownloadsPath() {
-  var home = getHomePath();
-  return path.join(home, 'Downloads');
-}
-
 void main(List<String> arguments) async {
+  var pathManager = SystemPathManager();
+
   var filePath = arguments.first;
   var file = File(filePath);
 
@@ -28,9 +16,20 @@ void main(List<String> arguments) async {
 
   var parsedInput = LCovParser().parseMultiple(input);
 
-  var output = LCovToHtml(parsedInput);
+  var lcovToHtml = LCovToHtml(SystemFileLoader(), pathManager);
 
-  var outputFile = File(path.join(getDownloadsPath(), 'output.html'));
+  var output = lcovToHtml.generateHtml(parsedInput);
+
+  var outputFile =
+      File(path.join(pathManager.getDownloadsPath(), 'output.html'));
 
   await outputFile.writeAsString(output.toString());
+
+  var filesToWrites = await lcovToHtml.getFilesToWrite(parsedInput);
+
+  filesToWrites.map((e) async {
+    var file =
+        File(path.join(pathManager.getDownloadsPath(), '${e.fileName}.html'));
+    await file.writeAsString(e.element.toString());
+  });
 }

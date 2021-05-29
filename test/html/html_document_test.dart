@@ -1,12 +1,11 @@
 import 'package:lcov_report_gen/html/html_document.dart';
+import 'package:lcov_report_gen/html/html_text.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
-import './test_html_element.dart';
-
 void main() {
   test('Writes out correctly when a body is passed in', () {
-    var doc = HtmlDocument(body: TestHtmlElement());
+    var doc = HtmlDocument(body: HtmlText('test'));
 
     var result = doc.toString();
 
